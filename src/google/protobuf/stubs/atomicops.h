@@ -167,6 +167,20 @@ Atomic64 Release_Load(volatile const Atomic64* ptr);
 // ThreadSanitizer, http://clang.llvm.org/docs/ThreadSanitizer.html.
 #if defined(THREAD_SANITIZER)
 #include <google/protobuf/stubs/atomicops_internals_tsan.h>
+// NINTENDO
+#elif defined (NN_NINTENDO_SDK)
+#  if defined(GOOGLE_PROTOBUF_ARCH_ARM)
+#    include <google/protobuf/stubs/atomicops_internals_arm_gcc.h>
+#  elif defined(GOOGLE_PROTOBUF_ARCH_AARCH64)
+#    include <google/protobuf/stubs/atomicops_internals_arm64_gcc.h>
+#  else
+// Note : seeing an error here in Visual Studio, but compiling fine ?
+//        -> in C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Platforms\NX64\props
+//           (or equivalent) open NX64Intellisense.h and make sure that,
+//           in addition to __AARCH64EL__, the macro __aarch64__ is also defined.
+#    error "Could not determine whether the Nintendo plaform is 32 or 64 bytes"
+#  endif
+
 // MSVC.
 #elif defined(_MSC_VER)
 #if defined(GOOGLE_PROTOBUF_ARCH_IA32) || defined(GOOGLE_PROTOBUF_ARCH_X64)
@@ -187,7 +201,7 @@ GOOGLE_PROTOBUF_ATOMICOPS_ERROR
 #elif defined(__GNUC__)
 #if defined(GOOGLE_PROTOBUF_ARCH_IA32) || defined(GOOGLE_PROTOBUF_ARCH_X64)
 #include <google/protobuf/stubs/atomicops_internals_x86_gcc.h>
-#elif defined(GOOGLE_PROTOBUF_ARCH_ARM) && defined(__linux__)
+#elif defined(GOOGLE_PROTOBUF_ARCH_ARM) && (defined(__linux__) || defined(NN_NINTENDO_SDK))
 #include <google/protobuf/stubs/atomicops_internals_arm_gcc.h>
 #elif defined(GOOGLE_PROTOBUF_ARCH_AARCH64)
 #include <google/protobuf/stubs/atomicops_internals_arm64_gcc.h>
@@ -208,6 +222,7 @@ GOOGLE_PROTOBUF_ATOMICOPS_ERROR
 #else
 GOOGLE_PROTOBUF_ATOMICOPS_ERROR
 #endif
+
 
 // Unknown.
 #else

@@ -340,7 +340,7 @@ inline To down_cast(From* f) {                   // so we only accept pointers
     implicit_cast<From*, To>(0);
   }
 
-#if !defined(NDEBUG) && !defined(GOOGLE_PROTOBUF_NO_RTTI)
+#if !defined(NDEBUG) && !defined(GOOGLE_PROTOBUF_NO_RTTI) && !defined(NN_NINTENDO_SDK)
   assert(f == NULL || dynamic_cast<To>(f) != NULL);  // RTTI: debug mode only!
 #endif
   return static_cast<To>(f);
