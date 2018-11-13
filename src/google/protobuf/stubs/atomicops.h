@@ -78,7 +78,11 @@ typedef intptr_t Atomic64;
 
 // Use AtomicWord for a machine-sized pointer.  It will use the Atomic32 or
 // Atomic64 routines below, depending on your architecture.
+#ifdef EMSCRIPTEN
+typedef Atomic32 AtomicWord;
+#else
 typedef intptr_t AtomicWord;
+#endif
 
 // Atomically execute:
 //      result = *ptr;
@@ -164,8 +168,9 @@ Atomic64 Release_Load(volatile const Atomic64* ptr);
 #define GOOGLE_PROTOBUF_ATOMICOPS_ERROR \
 #error "Atomic operations are not supported on your platform"
 
-// ThreadSanitizer, http://clang.llvm.org/docs/ThreadSanitizer.html.
-#if defined(THREAD_SANITIZER)
+#if defined(EMSCRIPTEN)
+#include <google/protobuf/stubs/atomicops_internals_emscripten.h>
+#elif defined(THREAD_SANITIZER)
 #include <google/protobuf/stubs/atomicops_internals_tsan.h>
 // NINTENDO
 #elif defined (NN_NINTENDO_SDK)
